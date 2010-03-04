@@ -13,13 +13,21 @@ targets('common-user') do
     end
 
     action :create do
-      log "creating #{default_object}"
-      sh("useradd #{opts} #{default_object}").run
+      opt_string = opts
+
+      unless opt_string.blank?
+        log "creating #{default_object}"
+        sh("useradd #{opts} #{default_object}").run
+      end
     end
 
     action :update do
-      log "updating #{default_object}"
-      sh("usermod #{opts} #{default_object}").run
+      opt_string = opts
+
+      unless opt_string.blank?
+        log "updating #{default_object}"
+        sh("usermod #{opts} #{default_object}").run
+      end
     end
 
     action :delete do
