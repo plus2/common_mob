@@ -15,18 +15,19 @@ targets('common-git') do
 
     action :update do
       log "updating"
-      git("fetch").ok? &&
-      git("reset --hard #{ref}").ok?
+
+      git("fetch").run
+      git("reset --hard #{ref}").run
     end
 
     action :create do
       log "cloning"
-      git("clone -o origin #{args.repo} #{default_object}", :cwd => default_object.parent)
+      git("clone -o origin #{args.repo} #{default_object}", :cwd => default_object.parent).run
     end
 
     def changed
       if args.enable_submodules?
-        git("submodule update --init")
+        git("submodule update --init").ok?
       end
     end
 
@@ -38,11 +39,15 @@ targets('common-git') do
     def git(*cmd)
       cmd.options[:cwd] ||= default_object
       cmd[0] = "git #{cmd.first}"
-      sh(*cmd).run
+      sh(*cmd)
     end
 
     def default_object
       args.default_object.pathname
+    end
+
+    def ref
+      args.ref || args.branch || 'HEAD'
     end
 
     def revision
