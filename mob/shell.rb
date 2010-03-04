@@ -25,7 +25,7 @@ targets('common-shell') do
         }
       else # force state changed if we don't have any state comparison to go on
         {
-          :time => Time.now.to_i
+          :rand => rand
         }
       end
 
