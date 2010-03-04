@@ -40,6 +40,10 @@ targets('common-files') do
       }
     end
 
+    def default_object
+      Pathname(super)
+    end
+
     def validate!
     end
   end
@@ -79,17 +83,23 @@ targets('common-files') do
 
   Target(:symlink) do
     default_action(:create) do
-      if before_state[:points_to] != from
+      if before_state[:points_to] != to
         log "linking #{from} -> #{to}"
-        sh("ln -nfs #{to} #{from}")
+        sh("ln -nfs #{to} #{from}").run
       end
+
+      ensure_points_to_correct_file!
     end
 
     action(:delete) do
     end
 
+    def ensure_points_to_correct_file!
+      raise "symlink doesn't point #{from} -> #{to} after action" unless state[:points_to] == to
+    end
+
     def from
-      Pathname(args.from).expand_path
+      Pathname(default_object).expand_path
     end
     def to
       Pathname(args.to).expand_path.realpath
