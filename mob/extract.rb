@@ -8,8 +8,8 @@ targets('common-tarball') do
     default_action :extract do
       cmd = "tar #{compression_opt}xf #{default_object}"
 
-      if args.dest?
-        sh("#{cmd} --strip 1 -C #{args.dest}").run
+      if !dest.blank?
+        sh("#{cmd} --strip 1 -C #{dest}").run
       else
         sh("#{cmd}").run
       end
@@ -24,6 +24,10 @@ targets('common-tarball') do
       when 'bz2'
         'j'
       end
+    end
+
+    def dest
+      args.dest || args.extract_to || args.to
     end
 
     # no really good way to tell if we need to untar again...
