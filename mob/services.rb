@@ -9,7 +9,7 @@ targets('common-service') do
   SingletonTarget(:service) do
     default_action :enable do
       unless before_state[:enabled]
-        sh("/usr/sbin/update-rc.d #{ame} defaults").run
+        sh("/usr/sbin/update-rc.d #{name} defaults").run
         log "enabled service #{nickname}"
       end
     end
