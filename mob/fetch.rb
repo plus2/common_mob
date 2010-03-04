@@ -21,15 +21,15 @@ targets('common-fetch') do
 		end
 
     def expected_sha
-      args.sha || args.sha256 || args.sha512
+      [ args.sha, args.sha256, args.sha512 ].find {|s| !s.blank?}
     end
 
 		def state
-      new_sha = if args.sha
+      new_sha = if !args.sha.blank?
                   sha(default_object)
-                elsif args.sha256
+                elsif !args.sha256.blank?
                   sha256(default_object)
-                elsif args.sha512
+                elsif !args.sha512.blank?
                   sha512(default_object)
                 end
 
