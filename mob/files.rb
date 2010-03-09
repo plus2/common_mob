@@ -1,6 +1,7 @@
 targets('common-files') do
   require 'common_mob'
   require 'etc'
+  require 'fileutils'
 
   TargetHelpers do
     include CommonMob::DigestHelper
@@ -32,6 +33,10 @@ targets('common-files') do
     default_action :create do
       mkpath unless exist?
       set_file_ownership
+    end
+
+    action :delete do
+      FileUtils.rm_rf(default_object) if exist?
     end
 
     def state
