@@ -21,12 +21,9 @@ targets('common-service') do
       end
     end
 
-    def initd(command)
-      sh("/etc/init.d/#{name} #{command}").run
-    end
-
     action :start do
       initd('start')
+      ensure_running!
     end
 
     action :stop do
@@ -35,10 +32,12 @@ targets('common-service') do
 
     action :restart do
       initd('restart')
+      ensure_running!
     end
 
     action :reload do
       initd('reload')
+      ensure_running!
     end
 
     def state
@@ -52,5 +51,30 @@ targets('common-service') do
 		def name
 			nickname
 		end
+
+
+    def initd(command)
+      begin
+        sh("/etc/init.d/#{name} #{command}").run
+      rescue CommonMob::ShellError
+        if raise_on_failed_initd?
+          raise $!
+        else
+          log "/etc/init.d/#{name} #{command} failed (but swallowing exception)"
+        end
+      end
+    end
+
+    def raise_on_failed_initd?
+      false
+    end
+
+    def ensure_running!
+      unless sh("/etc/init.d/#{name} status").ok?
+        raise "#{name} should be running but isn't"
+      end
+      log "#{name} is running"
+    end
+
   end
 end
