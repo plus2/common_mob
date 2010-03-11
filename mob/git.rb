@@ -16,6 +16,8 @@ targets('common-git') do
     action :update do
       log "updating"
 
+      set_repo
+
       git("fetch").run
       git("reset --hard #{ref}").run
     end
@@ -40,6 +42,12 @@ targets('common-git') do
       cmd.options[:cwd] ||= default_object
       cmd[0] = "git #{cmd.first}"
       sh(*cmd)
+    end
+
+    def set_repo
+      git("config remote.origin.url #{args.repo}").run
+      # TODO write merge spec
+      # git("config branch.master.remote origin").run
     end
 
     def default_object
