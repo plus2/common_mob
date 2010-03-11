@@ -26,6 +26,15 @@ targets('common-files') do
         chmod(args.mode) 
       end
     end
+
+    def backup_file(f)
+      root = f.dirname
+      backedup = f.basename.to_s + ".AM-#{Time.now.to_i}"
+
+      log "backing #{f} up to #{root+backedup}"
+
+      FileUtils.cp f, (root+backedup)
+    end
   end
 
 
@@ -133,6 +142,9 @@ targets('common-files') do
 
       if sha512(new_content) != before_state[:sha512]
         log "template has changed, overwriting"
+        
+        backup_file(default_object) unless FalseClass === args.backup
+
         # TODO backups
         default_object.open('w') {|f| f << new_content}
       end
