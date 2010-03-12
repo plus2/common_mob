@@ -24,7 +24,7 @@ targets('common-git') do
 
     action :create do
       log "cloning"
-      git("clone -o origin #{args.repo} #{default_object}", :cwd => default_object.parent).run
+      git("clone -o #{remote} #{args.repo} #{default_object}", :cwd => default_object.parent).run
     end
 
     def changed
@@ -45,7 +45,7 @@ targets('common-git') do
     end
 
     def set_repo
-      git("config remote.origin.url #{args.repo}").run
+      git("config remote.#{remote}.url #{args.repo}").run
       # TODO write merge spec
       # git("config branch.master.remote origin").run
     end
@@ -54,12 +54,17 @@ targets('common-git') do
       args.default_object.pathname
     end
 
+    def remote
+      'origin'
+    end
+
     def ref
-      args.ref || args.branch || 'HEAD'
+      ref = args.ref || args.branch || 'master'
+      "#{remote}/#{ref}"
     end
 
     def revision
-      exist? && git('rev-parse HEAD').to_s
+      exist? && git("rev-parse HEAD").to_s
     rescue CommonMob::ShellError
     end
 
