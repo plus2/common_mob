@@ -87,6 +87,10 @@ module CommonMob
     def popen4(args={}, &b)
 
       cmd = args[:cmd]
+
+      if user = args[:as]
+        cmd = "sudo -H -u #{user} #{cmd}"
+      end
      
       # Do we wait for the child process to die before we yield
       # to the block, or after?
