@@ -12,10 +12,12 @@ targets('common-shell') do
       end
     end
 
-		def opts(extras={})
-			opts = {}
-			opts[:cwd] = args.cwd if args.cwd?
-			opts.merge(extras)
+		def opts
+      opts = AngryMob::AngryHash[ args ]
+
+      opts.delete_all_of(%w{notify action default_object creates})
+
+			opts
 		end
 
     def state
