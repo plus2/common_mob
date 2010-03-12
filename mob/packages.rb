@@ -25,7 +25,6 @@ targets('common-packages') do
 
     def state
       version = sh("apt-cache policy #{default_object}").to_s[/^\s+Installed: (.*)$/, 1]
-      log "version=#{version}"
 
       {
         :installed       => (version != '(none)'),
@@ -43,11 +42,11 @@ targets('common-packages') do
 
   Target(:gem) do
     default_action :install do
-      sh("gem install #{default_object} #{gem_version}").run unless before_state[:installed]
+      gemsh("install #{default_object} #{gem_version}").run unless before_state[:installed]
     end
 
     action :upgrade do
-      sh("gem update #{default_object}")
+      gemsh("update #{default_object}").run
     end
 
     action :uninstall do
@@ -63,8 +62,14 @@ targets('common-packages') do
       args.version.blank? ? '' : " -v '#{args.version}'"
     end
 
+    # works around bundler being a bit pushy
+    def gemsh(*args)
+      args[0] = "gem #{args[0]}"
+      sh(*args)
+    end
+
     def installed?
-      sh("gem list -i #{gem_version} #{default_object}").ok?
+      gemsh("list -i #{gem_version} #{default_object}").to_s.strip == 'true'
     end
   end
 end

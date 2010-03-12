@@ -8,6 +8,12 @@ module CommonMob
     def sh(*args,&blk)
       CommonMob::Shell.new(*args,&blk)
     end
+
+    # call ruby, or a ruby command with the environment cleaned of bundler spooge
+    def bundler_sh(*args,&blk)
+      args.options.without_cleaning_bundler = true
+      CommonMob::Shell.new(*args,&blk)
+    end
   end
 
   class Shell
@@ -109,6 +115,10 @@ module CommonMob
         args[:environment]["LC_ALL"] = "C"
       end
 
+      unless TrueClass === args[:without_cleaning_bundler]
+        args[:environment].update('RUBYOPT' => nil, 'BUNDLE_GEMFILE' => nil, 'GEM_HOME' => nil, 'GEM_PATH' => nil)
+      end
+
       debug "running #{cmd} #{massaged_args(args).inspect}"
       
       pwrite, pread, perror, pexception = IO.pipe, IO.pipe, IO.pipe, IO.pipe
@@ -144,7 +154,11 @@ module CommonMob
           end
           
           args[:environment].each do |key,value|
-            ENV[key.to_s] = value
+            if value.nil?
+              ENV.delete(key.to_s)
+            else
+              ENV[key.to_s] = value
+            end
           end
 
           if args[:umask]
