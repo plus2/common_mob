@@ -34,6 +34,8 @@ targets('common-files') do
       log "backing #{f} up to #{root+backedup}"
 
       FileUtils.cp f, (root+backedup)
+    rescue Errno::ENOENT
+      # *ulp*
     end
   end
 
