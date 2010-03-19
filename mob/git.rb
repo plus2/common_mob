@@ -76,6 +76,7 @@ targets('common-git') do
 
     def validate!
       problem!("no git repo defined") unless args.repo?
+      problem!("no git path defined") unless args.default_object?
     end
   end
 end
