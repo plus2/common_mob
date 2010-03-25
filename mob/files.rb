@@ -74,7 +74,7 @@ targets('common-files') do
 
     action :delete do
       if exist?
-        log "deleting #{default_action}"
+        log "deleting #{default_object}"
         unlink
       end
     end
