@@ -9,7 +9,14 @@ targets('common-service') do
   SingletonTarget(:service) do
     default_action :enable do
       unless before_state[:enabled]
-        sh("/usr/sbin/update-rc.d #{name} defaults").run
+        begin
+          sh("/usr/sbin/update-rc.d #{name} defaults").run
+        rescue CommonMob::ShellError
+          # can't really be expected to enable before init.d exists... maybe should be caught with an if?
+          if ! $!.result.stderr[/file does not exist$/]
+            raise $!
+          end
+        end
         log "enabled service #{nickname}"
       end
     end
@@ -60,7 +67,7 @@ targets('common-service') do
         if raise_on_failed_initd?
           raise $!
         else
-          log "/etc/init.d/#{name} #{command} failed (but swallowing exception)"
+          log "/etc/init.d/#{name} #{command} failed (but swallowing exception) (err=#{$!.result.stderr})"
         end
       end
     end
