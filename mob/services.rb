@@ -70,11 +70,26 @@ targets('common-service') do
     end
 
     def ensure_running!
+      ensure_running_with_initd!
+    end
+
+    def ensure_running_with_initd!
       unless sh("/etc/init.d/#{name} status").ok?
         raise "#{name} should be running but isn't"
       end
       log "#{name} is running"
     end
+
+    def ensure_running_with_pid!(pidfile)
+      pid = pidfile.pathname.read.chomp.to_i
+      Process.kill(0,pid)
+      true
+    rescue Errno::ENOENT
+      raise "#{name} not running: no pidfile found at #{pidfile}"
+    rescue Errno::ESRCH
+      raise "#{name} not running: no process with pid #{pid} found (pidfile at #{pidfile})"
+    end
+
 
   end
 end
