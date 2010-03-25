@@ -2,7 +2,9 @@ require 'fcntl'
 require 'stringio'
 
 module CommonMob
-  class ShellError < StandardError; end
+  class ShellError < StandardError
+    attr_accessor :result
+  end
 
   module ShellHelper
     def sh(*args,&blk)
@@ -71,7 +73,11 @@ module CommonMob
       end
 
       def ensure_ok!
-        ok? || raise(ShellError,"unable to run options=#{options.inspect}\noutput=#{stdout}\nerror=#{stderr}")
+        unless ok?
+          ex = ShellError.new("unable to run options=#{options.inspect}\noutput=#{stdout}\nerror=#{stderr}")
+          ex.result = self
+          raise(ex)
+        end
       end
     end
 
