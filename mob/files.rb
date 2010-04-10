@@ -26,24 +26,17 @@ targets('common-files') do
         chmod(args.mode) 
       end
     end
-
-    def backup_file(f)
-      root = f.dirname
-      backedup = f.basename.to_s + ".AM-#{Time.now.to_i}"
-
-      log "backing #{f} up to #{root+backedup}"
-
-      FileUtils.cp f, (root+backedup)
-    rescue Errno::ENOENT
-      # *ulp*
-    end
   end
 
 
   Target(:dir) do
     default_action :create do
-      mkpath unless exist?
-      set_file_ownership
+      begin
+        mkpath unless exist?
+        set_file_ownership
+      rescue Errno::EEXIST
+        # *ulp*
+      end
     end
 
     action :delete do
