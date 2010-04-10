@@ -19,7 +19,9 @@ module CommonMob
   end
 
   class Shell
-    include AngryMob::Log
+    def debug(*msg)
+      puts "sh: #{msg * ' '}"
+    end
 
     attr_reader :options
 
@@ -162,7 +164,9 @@ module CommonMob
             Process.euid = args[:user]
             Process.uid = args[:user]
           end
-          
+
+          # Copy the specified environment across to the child's environment.
+          # Keys with `nil` values are deleted from the environment.
           args[:environment].each do |key,value|
             if value.nil?
               ENV.delete(key.to_s)
@@ -290,8 +294,12 @@ module CommonMob
 
     def massaged_args args
       returning(args.dup) do |args_to_print|
-        args_to_print[:environment] = args[:environment].dup
-        args_to_print[:environment].delete('LC_ALL')
+        args_to_print[:environment] = e = args[:environment].dup
+
+        %w{LC_ALL GEM_HOME GEM_PATH RUBYOPT BUNDLE_GEMFILE}.each {|env| e.delete(env)}
+
+        args_to_print['cwd'] = args_to_print['cwd'].to_s if args_to_print['cwd']
+
         args_to_print.delete_if{|k,v| v.blank?}
       end
     end
