@@ -21,6 +21,9 @@ targets('common-packages') do
     end
 
     action :uninstall do
+      if before_state[:installed]
+        sh("apt-get remove -y #{default_object}").run
+      end
     end
 
     def state
