@@ -25,10 +25,11 @@ targets('common-git') do
     action :create do
       log "cloning"
       git("clone -o #{remote} #{args.repo} #{default_object}", :cwd => default_object.parent).run
+      git("reset --hard #{ref}").run
     end
 
     def changed
-      if args.enable_submodules?
+      unless FalseClass === args.enable_submodules
         git("submodule update --init").ok?
       end
     end
@@ -40,6 +41,7 @@ targets('common-git') do
 
     def git(*cmd)
       cmd.options[:cwd] ||= default_object
+      cmd.options[:as] = args.as if args.as?
       cmd[0] = "git #{cmd.first}"
       sh(*cmd)
     end
