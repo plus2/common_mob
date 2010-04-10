@@ -42,13 +42,24 @@ targets('common-user') do
     def state
       begin
         user = Etc.getpwnam(default_object)
+
+        groups = []
+
+        username = default_object
+        Etc.group do |g|
+          groups << g.name if g.mem.include?(username)
+        end
+
+        extra_groups = groups.uniq - [ Etc.getgrgid(user.gid).name ]
+
         {
           :exists  => true,
           :uid     => user.uid,
           :gid     => user.gid,
           :comment => user.gecos,
           :home    => user.dir,
-          :shell   => user.shell
+          :shell   => user.shell,
+          :extra_groups => extra_groups
         }
       rescue ArgumentError => e
         {
@@ -76,7 +87,8 @@ targets('common-user') do
         :uid     => '-u',
         :shell   => '-s',
         :set_home => lambda {|value| "-d '#{value}'"   },
-        :home     => lambda {|value| "-d '#{value}' -m"}
+        :home     => lambda {|value| "-d '#{value}' -m"},
+        :extra_groups => lambda {|value| "-G #{value * ','}"}
       }
 
       switches.each do |(key,switch)|
