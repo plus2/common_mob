@@ -8,7 +8,15 @@ targets('common-shell') do
   Target(:sh) do
     default_action :execute do
       if ! before_state[:created]
-        sh(default_object, opts.tapp(:opts)).run
+        begin
+          sh(default_object, opts.tapp(:opts)).run
+        rescue CommonMob::ShellError
+          if args.swallow_error?
+            log "command failed, but ignoring"
+          else
+            raise $!
+          end
+        end
       end
     end
 
