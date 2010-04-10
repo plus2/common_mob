@@ -179,4 +179,32 @@ targets('common-files') do
       problem!(":src #{src} isn't readable") unless src.readable?
     end
   end
+
+  Target(:patch) do
+    default_action :patch do
+      log "patchhing"
+      patched = patch_file(default_object)
+
+      if before_state[:sha512] != sha512(patched)
+        log "patch has changed, overwriting"
+        
+        backup_file(default_object)
+        default_object.open('w') {|f| f << patched}
+      end
+
+    end
+
+    action :unpatch do
+    end
+
+    def default_object
+      Pathname(super)
+    end
+
+    def state
+      {
+        :sha512 => sha512(default_object)
+      }
+    end
+  end
 end
