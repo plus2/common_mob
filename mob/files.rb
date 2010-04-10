@@ -6,9 +6,13 @@ targets('common-files') do
   TargetHelpers do
     include CommonMob::DigestHelper
     include CommonMob::ShellHelper
+    include CommonMob::PatchHelper
+    include CommonMob::FileHelper
     include CommonMob::Erb
 
     def set_file_ownership
+      args.owner ||= args.user
+      args.group ||= args.user
 
       unless args.owner.blank? && args.group.blank?
         owner = args.owner || stat.uid
@@ -60,22 +64,18 @@ targets('common-files') do
   Target(:file) do
     default_action :create do
       if args.src
+        copy_resource resource(args.src)
       elsif args.string
         create_string
       end
+
+      set_file_ownership
     end
 
     action :delete do
       if exist?
         log "deleting #{default_object}"
         unlink
-      end
-    end
-
-    def create_string
-      if sha512(args.string) != before_state[:sha512]
-        log "input string different from file contents, overwriting"
-        default_object.open('w') {|f| f << args.string}
       end
     end
 
@@ -88,6 +88,23 @@ targets('common-files') do
         :sha512 => sha512(default_object)
       }
     end
+
+    protected
+
+    def copy_resource(src)
+      if sha512(src) != before_state[:sha512]
+        log "input string different from file contents, overwriting"
+        src.cp_to(default_object)
+      end
+    end
+
+    def create_string
+      if sha512(args.string) != before_state[:sha512]
+        log "input string different from file contents, overwriting"
+        default_object.open('w') {|f| f << args.string}
+      end
+    end
+
   end
 
   Target(:symlink) do
@@ -138,9 +155,8 @@ targets('common-files') do
       if sha512(new_content) != before_state[:sha512]
         log "template has changed, overwriting"
         
-        backup_file(default_object) unless FalseClass === args.backup
+        backup_file(default_object)
 
-        # TODO backups
         default_object.open('w') {|f| f << new_content}
       end
 
