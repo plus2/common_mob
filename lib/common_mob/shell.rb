@@ -96,9 +96,6 @@ module CommonMob
 
       cmd = args[:cmd]
 
-      if user = args[:as]
-        cmd = "sudo -H -u #{user} #{cmd}"
-      end
      
       # Do we wait for the child process to die before we yield
       # to the block, or after?
@@ -129,6 +126,16 @@ module CommonMob
 
       unless TrueClass === args[:without_cleaning_bundler]
         args[:environment].update('RUBYOPT' => nil, 'BUNDLE_GEMFILE' => nil, 'GEM_HOME' => nil, 'GEM_PATH' => nil)
+      end
+
+      if user = args[:as]
+        if (evars = args[:environment].reject {|k,v| v.nil?}.map {|k,v| "#{k}=#{v}"}) && !evars.empty?
+          env = "env #{evars.join(' ')}"
+        else
+          env = ''
+        end
+        
+        cmd = "sudo -H -u #{user} #{env} #{cmd}"
       end
 
       debug "running #{cmd} #{massaged_args(args).inspect}"
