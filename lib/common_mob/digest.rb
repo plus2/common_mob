@@ -32,5 +32,12 @@ module CommonMob
 
       digest.hexdigest
     end
+
+    def generate_htpasswd(password)
+      pool = [ 'A'..'Z', 'a'..'z', '0'..'9' ].map {|r| r.to_a}.flatten
+      salt = [1,2].map {|_| pool[rand(pool.size)] }.join
+
+      password.to_s.crypt(salt)
+    end
   end
 end
