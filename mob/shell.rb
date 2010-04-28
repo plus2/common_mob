@@ -21,7 +21,7 @@ targets('common-shell') do
     end
 
 		def opts
-      opts = AngryMob::AngryHash[ args ]
+      opts = AngryHash[ args ]
 
       opts.delete_all_of(%w{notify action default_object creates})
 

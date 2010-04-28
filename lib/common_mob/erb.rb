@@ -11,10 +11,10 @@ module CommonMob
 
       def convert_value(value)
         case value
-        when AngryMob::AngryHash
+        when AngryHash
           value
         when Hash
-          AngryMob::AngryHash[value]
+          AngryHash[value]
         else
           value
         end
