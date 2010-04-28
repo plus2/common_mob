@@ -1,10 +1,9 @@
-targets('common-tarball') do
-  require 'common_mob/shell'
+require 'common_mob/shell'
 
-  TargetHelpers do
+module CommonMob
+  class Tarball < AngryMob::Target
     include CommonMob::ShellHelper
-  end
-  Target(:tarball) do
+
     default_action :extract do
       cmd = "tar #{compression_opt}xf #{default_object}"
 

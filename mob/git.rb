@@ -1,10 +1,9 @@
-targets('common-git') do
-  require 'common_mob'
-  TargetHelpers do
-    include CommonMob::ShellHelper
-  end
+require 'common_mob'
 
-  Target(:git) do
+module CommonMob
+  class Git < AngryMob::Target
+    include CommonMob::ShellHelper
+
     default_action :sync do
       if is_git?
         update

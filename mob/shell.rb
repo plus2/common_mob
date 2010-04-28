@@ -1,11 +1,9 @@
-targets('common-shell') do
-  require 'common_mob'
+require 'common_mob'
 
-  TargetHelpers do
+module CommonMob
+  class Sh < AngryMob::Target
     include CommonMob::ShellHelper
-  end
 
-  Target(:sh) do
     default_action :execute do
       if ! before_state[:created]
         begin

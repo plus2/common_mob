@@ -1,12 +1,9 @@
-targets('common-service') do
-  require 'common_mob'
+require 'common_mob'
 
-  TargetHelpers do
+module CommonMob
+  class Service < AngryMob::SingletonTarget
     include CommonMob::ShellHelper
-  end
 
-
-  SingletonTarget(:service) do
     default_action :enable do
       unless before_state[:enabled]
         begin
@@ -96,7 +93,6 @@ targets('common-service') do
     rescue Errno::ESRCH
       raise "#{name} not running: no process with pid #{pid} found (pidfile at #{pidfile})"
     end
-
 
   end
 end

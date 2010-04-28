@@ -1,5 +1,5 @@
-targets('common-ruby') do
-  Target('block') do
+module CommonMob
+  class Block < AngryMob::Target
     default_action :run do
       log "calling block..."
       instance_eval &default_object

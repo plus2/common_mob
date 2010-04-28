@@ -1,11 +1,9 @@
-targets('common-packages') do
-  require 'common_mob'
+require 'common_mob'
 
-  TargetHelpers do
+module CommonMob
+  class Apt < AngryMob::Target
     include CommonMob::ShellHelper
-  end
 
-  Target(:apt) do
     default_action :install do
       if args.version && !before_state[:version_matches]
         # TODO - install with version
@@ -43,7 +41,9 @@ targets('common-packages') do
 
   end
 
-  Target(:gem) do
+  class Gem < AngryMob::Target
+    include CommonMob::ShellHelper
+
     default_action :install do
       gemsh("install #{default_object} #{gem_version}").run unless before_state[:installed]
     end

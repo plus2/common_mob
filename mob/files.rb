@@ -1,9 +1,9 @@
-targets('common-files') do
-  require 'common_mob'
-  require 'etc'
-  require 'fileutils'
+require 'common_mob'
+require 'etc'
+require 'fileutils'
 
-  TargetHelpers do
+module CommonMob
+  module FileHelpers
     include CommonMob::DigestHelper
     include CommonMob::ShellHelper
     include CommonMob::PatchHelper
@@ -33,7 +33,8 @@ targets('common-files') do
   end
 
 
-  Target(:dir) do
+  class Dir < AngryMob::Target
+    include FileHelpers
     default_action :create do
       begin
         mkpath unless exist?
@@ -61,7 +62,9 @@ targets('common-files') do
     end
   end
 
-  Target(:file) do
+  class File < AngryMob::Target
+    include FileHelpers
+
     default_action :create do
       if args.src
         copy_resource resource(args.src)
@@ -107,7 +110,9 @@ targets('common-files') do
 
   end
 
-  Target(:symlink) do
+  class Symlink < AngryMob::Target
+    include FileHelpers
+
     default_action(:create) do
       if before_state[:points_to] != to
         log "linking #{from} -> #{to}"
@@ -148,7 +153,9 @@ targets('common-files') do
   end
 
 
-  Target(:template) do
+  class Template < AngryMob::Target
+    include FileHelpers
+
     default_action :create do
       new_content = render_erb(src,variables)
 
@@ -189,7 +196,8 @@ targets('common-files') do
     end
   end
 
-  Target(:patch) do
+  class Patch < AngryMob::Target
+    include FileHelpers
     default_action :patch do
       log "patchhing"
       patched = patch_file(default_object)

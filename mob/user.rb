@@ -1,12 +1,9 @@
-targets('common-user') do
-  require 'common_mob'
-  require 'etc'
+require 'common_mob'
+require 'etc'
 
-  TargetHelpers do
+module CommonMob
+  class User < AngryMob::Target
     include CommonMob::ShellHelper
-  end
-
-  Target(:user) do
 
     default_action :ensure do
       if before_state[:exists] then update else create end
