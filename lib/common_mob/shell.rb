@@ -20,6 +20,7 @@ module CommonMob
 
   class Shell
     def debug(*msg)
+      # how to do this from UI ?
       puts "sh: #{msg * ' '}"
     end
 
@@ -138,7 +139,7 @@ module CommonMob
         cmd = "sudo -H -u #{user} #{env} #{cmd}"
       end
 
-      debug "running #{cmd} #{massaged_args(args).inspect}"
+      # debug "running #{cmd} #{massaged_args(args).inspect}"
       
       pwrite, pread, perror, pexception = IO.pipe, IO.pipe, IO.pipe, IO.pipe
 

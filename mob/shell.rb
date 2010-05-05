@@ -9,7 +9,7 @@ targets('common-shell') do
     default_action :execute do
       if ! before_state[:created]
         begin
-          sh(default_object, opts.tapp(:opts)).run
+          sh(default_object, opts).run
         rescue CommonMob::ShellError
           if args.swallow_error?
             log "command failed, but ignoring"

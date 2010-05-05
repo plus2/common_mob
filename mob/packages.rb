@@ -12,8 +12,6 @@ targets('common-packages') do
         sh("apt-get install -y #{default_object}").run
       elsif !before_state[:installed]
         sh("apt-get install -y #{default_object}").run
-      else
-        log "no need to install #{default_object}"
       end
     end
 
