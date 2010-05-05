@@ -4,6 +4,7 @@ class Fetch < AngryMob::Target
   include CommonMob::ShellHelper
   include CommonMob::DigestHelper
 
+  default_action
   def fetch
     log "expected_sha=#{expected_sha}"
 

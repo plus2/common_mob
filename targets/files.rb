@@ -36,6 +36,7 @@ class DirTarget < AngryMob::Target
   nickname 'dir'
 
   include FileHelpers
+  default_action
   def create
     begin
       mkpath unless exist?
@@ -69,6 +70,7 @@ class FileTarget < AngryMob::Target
   nickname 'file'
   include FileHelpers
 
+  default_action
   def create
     if args.src
       copy_resource resource(args.src)
@@ -118,6 +120,7 @@ end
 class Symlink < AngryMob::Target
   include FileHelpers
 
+  default_action
   def create
     if before_state[:points_to] != to
       log "linking #{from} -> #{to}"
@@ -163,6 +166,7 @@ end
 class Template < AngryMob::Target
   include FileHelpers
 
+  default_action
   def create
     new_content = render_erb(src,variables)
 
@@ -207,6 +211,8 @@ end
 
 class Patch < AngryMob::Target
   include FileHelpers
+
+  default_action
   def patch
     log "patchhing"
     patched = patch_file(default_object)

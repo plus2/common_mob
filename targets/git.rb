@@ -3,6 +3,7 @@ require 'common_mob'
 class Git < AngryMob::Target
   include CommonMob::ShellHelper
 
+  default_action
   def sync
     if is_git?
       update

@@ -4,6 +4,7 @@ require 'etc'
 class User < AngryMob::Target
   include CommonMob::ShellHelper
 
+  default_action
   def ensure
     if before_state[:exists] then update else create end
   end

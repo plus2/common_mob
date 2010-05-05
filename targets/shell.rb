@@ -3,6 +3,7 @@ require 'common_mob'
 class Sh < AngryMob::Target
   include CommonMob::ShellHelper
 
+  default_action
   def execute
     if ! before_state[:created]
       begin

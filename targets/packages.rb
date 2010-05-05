@@ -3,6 +3,7 @@ require 'common_mob'
 class Apt < AngryMob::Target
   include CommonMob::ShellHelper
 
+  default_action
   def install
     if args.version && !before_state[:version_matches]
       # TODO - install with version
@@ -37,7 +38,7 @@ class Apt < AngryMob::Target
 
   protected
   def before_call
-    if?('installable') { before_state[:installable] }
+    skip! unless before_state[:installable]
   end
 
 end
@@ -47,6 +48,7 @@ class GemPackage < AngryMob::Target
 
   include CommonMob::ShellHelper
 
+  default_action
   def install
     gemsh("install #{default_object} #{gem_version}").run unless before_state[:installed]
   end
