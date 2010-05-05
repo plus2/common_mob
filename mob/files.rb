@@ -63,7 +63,7 @@ targets('common-files') do
 
   Target(:file) do
     default_action :create do
-      if args.src
+      if args.src?
         copy_resource resource(args.src)
       elsif args.string
         create_string
@@ -90,6 +90,19 @@ targets('common-files') do
     end
 
     protected
+
+    def src
+      resource(args.src)
+    end
+
+    def validate!
+      if args.src?
+        problem!(":src #{src} doesn't exist" ) unless src.exist?
+      elsif !args.src? && !args.string?
+        problem("please specify one of :src or :string")
+      end
+    end
+
 
     def copy_resource(src)
       if sha512(src) != before_state[:sha512]
