@@ -1,7 +1,11 @@
 require 'common_mob'
 
-class Service < AngryMob::SingletonTarget
+class Service < AngryMob::Target
   include CommonMob::ShellHelper
+
+  def self.instance_key(args)
+    "service:#{nickname}"
+  end
 
   default_action
   def enable
