@@ -20,8 +20,7 @@ module CommonMob
 
   class Shell
     def debug(*msg)
-      # how to do this from UI ?
-      puts "sh: #{msg * ' '}"
+      AngryMob::Mob.ui.debug "sh: #{msg * ' '}"
     end
 
     attr_reader :options
