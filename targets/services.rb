@@ -48,7 +48,18 @@ class Service < AngryMob::Target
     ensure_running!
   end
 
+  def be_running
+    start
+  end
+
+
+  def to_s
+    "#{nickname}()"
+  end
+
   protected
+  def validate!
+  end
 
   def state
     enabled = sh("/usr/sbin/update-rc.d -n -f #{name} remove").to_s[%r[/etc/rc\d+.d/]]

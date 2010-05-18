@@ -100,6 +100,10 @@ class FileTarget < AngryMob::Target
     }
   end
 
+  def src
+    resource(args.src)
+  end
+
   def validate!
       if args.src?
         problem!(":src #{src} doesn't exist" ) unless src.exist?
@@ -200,7 +204,7 @@ class Template < AngryMob::Target
   end
 
   def variables
-    (args.variables || {}).update(:node => node)
+    (args.variables || args.vars || {}).update(:node => node)
   end
 
   def state
