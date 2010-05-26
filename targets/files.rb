@@ -1,5 +1,4 @@
 require 'common_mob'
-require 'etc'
 require 'fileutils'
 
 module FileHelpers
@@ -13,21 +12,7 @@ module FileHelpers
     args.owner ||= args.user
     args.group ||= args.user
 
-    unless args.owner.blank? && args.group.blank?
-      owner = args.owner || stat.uid
-      group = args.group || stat.gid
-
-      owner = Etc.getpwnam(owner.to_s).uid unless Integer === owner
-      group = Etc.getgrnam(group.to_s).gid unless Integer === group
-
-      log "setting #{default_object} to owner=#{owner} group=#{group}"
-      chown(owner,group)
-    end
-
-    unless args.mode.blank?
-      log "setting #{default_object} to mode=0%o" % args.mode
-      chmod(args.mode) 
-    end
+    set_file_attrs(default_object, args.owner, args.group, args.mode)
   end
 end
 
