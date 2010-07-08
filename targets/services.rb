@@ -39,12 +39,26 @@ class Service < AngryMob::Target
   end
 
   def restart
-    initd('restart')
+    if is_running?
+      ui.log "restarting."
+      initd('restart', true)
+    else
+      ui.log "restart requested, but not running: starting."
+      initd('start')
+    end
+
     ensure_running!
   end
 
   def reload
-    initd('reload')
+    if is_running?
+      ui.log "reloading."
+      initd('reload', true)
+    else
+      ui.log "reload requested, but not running: starting."
+      initd('start')
+    end
+
     ensure_running!
   end
 
