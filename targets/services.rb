@@ -13,7 +13,7 @@ class Service < AngryMob::Target
       begin
         sh("/usr/sbin/update-rc.d #{name} defaults").run
       rescue CommonMob::ShellError
-        # can't really be expected to enable before init.d exists... maybe should be caught with an if?
+        # can't really be expected to enable before init.d exists
         if ! $!.result.stderr[/file does not exist$/]
           raise $!
         end
@@ -87,25 +87,73 @@ class Service < AngryMob::Target
     nickname
   end
 
-
-  def initd(command)
+  def initd(command,should_raise=false)
+    should_raise = raise_on_failed_initd?
     begin
       sh("/etc/init.d/#{name} #{command}").run
     rescue CommonMob::ShellError
-      if raise_on_failed_initd?
+      if should_raise
         raise $!
       else
-        log "/etc/init.d/#{name} #{command} failed (but swallowing exception) (err=#{$!.result.stderr})"
+        log "/etc/init.d/#{name} #{command} failed (but swallowing exception)"
+        log "(out=#{$!.result.stdout})"
+        log "(err=#{$!.result.stderr})"
       end
     end
   end
+
 
   def raise_on_failed_initd?
     false
   end
 
+  def self.pidfile(pidfile)
+    self.class_eval %{
+      def pidfile; "#{pidfile}" end
+      def process_approach; :pid end
+    }
+  end
+
+  def process_approach
+    :initd
+  end
+
+  def pidfile
+    raise "Not implemented. To use the pid based process approach, please override pidfile in #{self.class}."
+  end
+
   def ensure_running!
-    ensure_running_with_initd!
+    case process_approach
+    when :initd
+      ensure_running_with_initd!
+    when :pid
+      ensure_running_with_pid!
+    else
+      raise ArgumentError, "Unknown process_approach '#{process_approach}'\nSet the process approach to :initd or :pid\ndef process_approach\n\t:initd\nend"
+    end
+  end
+
+  def is_running?
+    case process_approach
+    when :initd
+      is_running_initd?
+    when :pid
+      is_running_pid?
+    else
+      raise ArgumentError, "Unknown process_approach '#{process_approach}'\nSet the process approach to :initd or :pid\ndef process_approach\n\t:initd\nend"
+    end
+  end
+
+  def is_running_initd?
+    sh("/etc/init.d/#{name} status").ok?
+  end
+
+  def is_running_pid?
+    pid = pidfile.pathname.read.chomp.to_i
+    Process.kill(0,pid)
+    true
+  rescue Errno::ENOENT,Errno::ESRCH
+    false
   end
 
   def ensure_running_with_initd!
@@ -115,7 +163,7 @@ class Service < AngryMob::Target
     log "#{name} is running"
   end
 
-  def ensure_running_with_pid!(pidfile)
+  def ensure_running_with_pid!
     pid = pidfile.pathname.read.chomp.to_i
     Process.kill(0,pid)
     true
