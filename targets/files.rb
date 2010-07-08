@@ -93,7 +93,7 @@ class FileTarget < AngryMob::Target
       if args.src?
         problem!(":src #{src} doesn't exist" ) unless src.exist?
       elsif !args.src? && !args.string?
-        problem("please specify one of :src or :string")
+        problem!("please specify one of :src or :string")
       end
     end
 
@@ -212,6 +212,7 @@ class Patch < AngryMob::Target
   default_action
   def patch
     log "patchhing"
+
     patched = patch_file(default_object)
 
     if before_state[:sha512] != sha512(patched)
