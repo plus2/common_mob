@@ -114,6 +114,8 @@ class FileTarget < AngryMob::Target
 
 end
 
+# symlink("from/path", :to => "to/path")
+#
 class Symlink < AngryMob::Target
   include FileHelpers
 
