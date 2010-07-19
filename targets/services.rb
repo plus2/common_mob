@@ -87,6 +87,10 @@ class Service < AngryMob::Target
     nickname
   end
 
+  def self.service_name(name)
+    self.class_eval "def name; '#{name}' end"
+  end
+
   def initd(command,should_raise=false)
     should_raise = raise_on_failed_initd?
     begin
