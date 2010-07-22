@@ -6,7 +6,7 @@ module FileHelpers
   include CommonMob::ShellHelper
   include CommonMob::PatchHelper
   include CommonMob::FileHelper
-  include CommonMob::Erb
+  include CommonMob::Template
 
   def set_file_ownership
     args.owner ||= args.user
@@ -167,7 +167,7 @@ class Template < AngryMob::Target
 
   default_action
   def create
-    new_content = render_erb(src,variables)
+    new_content = render_template(src,variables)
 
     if sha512(new_content) != before_state[:sha512]
       log "template has changed, overwriting"
