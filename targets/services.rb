@@ -177,4 +177,8 @@ class Service < AngryMob::Target
     raise "#{name} not running: no process with pid #{pid} found (pidfile at #{pidfile})"
   end
 
+  def at_least_lucid?
+    issue = "/etc/issue".pathname
+    issue.exist? && issue.read[/ubuntu.+10\.04/i]
+  end
 end
