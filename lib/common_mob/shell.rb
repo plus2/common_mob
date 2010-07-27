@@ -128,6 +128,13 @@ module CommonMob
         args[:environment].update('RUBYOPT' => nil, 'BUNDLE_GEMFILE' => nil, 'GEM_HOME' => nil, 'GEM_PATH' => nil)
       end
 
+      # XXX assumes user's home dir is at /home/username which isn't true in general
+      unless TrueClass === args[:system_bundler]
+        user = args[:user] || args[:as]
+        home = user ? user : ENV['HOME']
+        args[:environment].update('BUNDLE_PATH' => "#{home}/.bundle")
+      end
+
       if user = args[:as]
         if (evars = args[:environment].reject {|k,v| v.nil?}.map {|k,v| "#{k}=#{v}"}) && !evars.empty?
           env = "env #{evars.join(' ')}"
