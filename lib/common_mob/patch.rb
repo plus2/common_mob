@@ -2,13 +2,13 @@ module CommonMob
   module PatchHelper
     def patch_marker_re(comment,key,switch)
       %[
-        #{Regexp.escape(comment)}
+        #{Regexp.escape(comment.to_s)}
         \\s+
         angry-mob
         \\s+
-        #{Regexp.escape(key)}
+        #{Regexp.escape(key.to_s)}
         \\s+
-        #{Regexp.escape(switch)}
+        #{Regexp.escape(switch.to_s)}
         $
       ]
     end
