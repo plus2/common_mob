@@ -90,12 +90,14 @@ class FileTarget < AngryMob::Target
   end
 
   def validate!
+    if !args.actions.include?('delete')
       if args.src?
         problem!(":src #{src} doesn't exist" ) unless src.exist?
       elsif !args.src? && !args.string?
         problem!("please specify one of :src or :string")
       end
     end
+  end
 
 
   def copy_resource(src)
