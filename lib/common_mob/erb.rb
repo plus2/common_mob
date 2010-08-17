@@ -47,7 +47,7 @@ module CommonMob
       end
 
       def line_number
-        @line_number = line_number!
+        @line_number ||= line_number! || 0
       end
       def line_number!
         re = /\(erb\):(\d+):in `get_binding'/
