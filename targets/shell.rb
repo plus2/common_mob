@@ -6,8 +6,10 @@ class Sh < AngryMob::Target
   default_action
   def execute
     if ! before_state[:created]
+      result = sh(default_object, opts).execute
+
       begin
-        sh(default_object, opts).run
+        result.ensure_ok!
       rescue CommonMob::ShellError
         if args.swallow_error?
           log "command failed, but ignoring"
@@ -15,6 +17,12 @@ class Sh < AngryMob::Target
           raise $!
         end
       end
+
+      if ui.debug?
+        ui.debug "stdout=#{result.stdout}"
+        ui.debug "stderr=#{result.stderr}"
+      end
+
     end
   end
 
