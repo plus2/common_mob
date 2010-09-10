@@ -193,7 +193,9 @@ class Template < AngryMob::Target
   end
 
   def variables
-    (args.variables || args.vars || {}).update(:node => node)
+    @variables ||= (args.variables || args.vars || AngryHash.new).tap {|vars|
+                    vars.node = node
+    }
   end
 
   def state
