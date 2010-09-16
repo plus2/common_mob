@@ -7,15 +7,17 @@ class User < AngryMob::Target
   default_action
   def ensure
     if before_state[:exists] then update else create end
+
+    unless state[:exists]
+      raise "unable to create user #{default_object}"
+    end
   end
 
   def create
     opt_string = opts
 
-    unless opt_string.blank?
-      log "creating #{default_object}"
-      sh("useradd #{opts} #{default_object}").run
-    end
+    log "creating #{default_object}"
+    sh("useradd #{opts} #{default_object}").run
   end
 
   def update
