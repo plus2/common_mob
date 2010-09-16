@@ -7,9 +7,9 @@ class Apt < AngryMob::Target
   def install
     if args.version && !before_state[:version_matches]
       # TODO - install with version
-      sh("apt-get install -y #{default_object}").run
+      sh("apt-get install -y #{default_object}", :environment => {'DEBIAN_FRONTEND' => "noninteractive"}).run
     elsif !before_state[:installed]
-      sh("apt-get install -y #{default_object}").run
+      sh("apt-get install -y #{default_object}", :environment => {'DEBIAN_FRONTEND' => "noninteractive"}).run
     else
       log "no need to install #{default_object}"
     end
