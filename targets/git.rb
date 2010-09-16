@@ -15,16 +15,29 @@ class Git < AngryMob::Target
   def update
     log "updating"
 
-    set_repo
+    begin
+      set_repo
 
-    git("fetch").run
-    git("reset --hard #{ref}").run
+      git("fetch").run
+      git("reset --hard #{ref}").run
+
+    rescue
+      ui.exception! $!
+      raise $! unless args.swallow_errors?
+    end
   end
 
   def create
     log "cloning"
-    git("clone -o #{remote} #{args.repo} #{default_object}", :cwd => default_object.parent).run
-    git("reset --hard #{ref}").run
+
+    begin
+      git("clone -o #{remote} #{args.repo} #{default_object}", :cwd => default_object.parent).run
+      git("reset --hard #{ref}").run
+
+    rescue
+      ui.exception! $!
+      raise $! unless args.swallow_errors?
+    end
   end
 
   protected
