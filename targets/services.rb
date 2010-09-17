@@ -168,6 +168,7 @@ class Service < AngryMob::Target
   end
 
   def ensure_running_with_pid!
+    # TODO replace with CommonMob::ProcessHelper.find_pid()
     pid = pidfile.pathname.read.chomp.to_i
     Process.kill(0,pid)
     true
