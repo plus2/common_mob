@@ -1,3 +1,5 @@
+require 'common_mob'
+
 class GemPackage < AngryMob::Target
   nickname 'gem'
 
