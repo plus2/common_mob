@@ -2,9 +2,11 @@ require 'pathname'
 root = Pathname('../../').expand_path(__FILE__)
 $LOAD_PATH << root+'vendor/mustache/lib'
 
-require 'common_mob/file'
-require 'common_mob/patch'
-require 'common_mob/digest'
-require 'common_mob/template'
-require 'common_mob/shell'
-require 'common_mob/process'
+module CommonMob
+  autoload :FileHelper   , 'common_mob/file'
+  autoload :PatchHelper  , 'common_mob/patch'
+  autoload :DigestHelper , 'common_mob/digest'
+  autoload :Template     , 'common_mob/template'
+  autoload :ShellHelper  , 'common_mob/shell'
+  autoload :ProcessHelper, 'common_mob/process'
+end

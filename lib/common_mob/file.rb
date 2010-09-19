@@ -1,5 +1,6 @@
 require 'pathname'
 require 'etc'
+require 'fileutils'
 
 module CommonMob
   module FileHelper
@@ -51,5 +52,18 @@ module CommonMob
       end
     end
     
+
+    include CommonMob::DigestHelper
+    include CommonMob::ShellHelper
+    include CommonMob::PatchHelper
+    include CommonMob::Template
+
+    def set_file_ownership
+      args.owner ||= args.user
+      args.group ||= args.user
+
+      set_file_attrs(default_object, args.owner, args.group, args.mode)
+    end
+
   end
 end
