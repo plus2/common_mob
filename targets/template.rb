@@ -5,7 +5,7 @@ class Template < AngryMob::Target
 
   default_action
   def create
-    new_content = render_template(src,variables)
+    new_content = render_template(source,variables)
 
     if sha512(new_content) != before_state[:sha512]
       log "template has changed, overwriting"
@@ -24,8 +24,12 @@ class Template < AngryMob::Target
     Pathname(super)
   end
 
-  def src
-    resource(args.src)
+  def source
+    @source ||= if args.src?
+                  resource(args.src)
+                else
+                  StringIO.new(args.string)
+                end
   end
 
   def variables
@@ -42,9 +46,15 @@ class Template < AngryMob::Target
 
   def validate!
     super
-    problem!(":src #{src} doesn't exist" ) unless src.exist?
-    problem!(":src #{src} isn't a file"  ) unless src.file?
-    problem!(":src #{src} isn't readable") unless src.readable?
+
+    if args.src?
+      src = source
+      problem!(":src #{src} doesn't exist" ) unless src.exist?
+      problem!(":src #{src} isn't a file"  ) unless src.file?
+      problem!(":src #{src} isn't readable") unless src.readable?
+    else
+      problem!("Please specify either :src or :string") unless args.string?
+    end
   end
 end
 
