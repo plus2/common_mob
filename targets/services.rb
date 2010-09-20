@@ -7,6 +7,12 @@ class Service < AngryMob::Target
     "service:#{nickname}"
   end
 
+	# TODO add service style mixins
+	#include CommonMob::Service::Styles::Sysv
+	#include CommonMob::Service::Styles::Debian
+	#include CommonMob::Service::Styles::Upstart
+	#include CommonMob::Service::Styles::Redhat
+
   default_action
   def enable
     unless before_state[:enabled]
