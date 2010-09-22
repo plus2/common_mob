@@ -1,4 +1,5 @@
-class UpstartConfig < Template
+__END__
+class UpstartConfig < ::Template
   default_action
   def create
     super

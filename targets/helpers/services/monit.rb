@@ -1,4 +1,5 @@
-class MonitConfig < Template
+__END__
+class MonitConfig < ::Template
   default_action
   def create
     super
