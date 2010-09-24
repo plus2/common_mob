@@ -1,4 +1,5 @@
-__END__
+require 'template'
+
 class UpstartConfig < ::Template
   default_action
   def create

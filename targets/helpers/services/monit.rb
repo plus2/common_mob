@@ -1,4 +1,5 @@
-__END__
+require 'template'
+
 class MonitConfig < ::Template
   default_action
   def create
