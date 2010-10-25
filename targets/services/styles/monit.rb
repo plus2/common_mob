@@ -4,33 +4,35 @@ require 'common_mob'
 module CommonMob
   module Services
     module Styles
-      module Upstart
+      module Monit
         include CommonMob::ShellHelper
 
         def enable_service
           return if service_enabled?
 
-          FileUtils.mv( disabled_upstart_config, upstart_config ) if disabled_upstart_config.exist?
+          FileUtils.mv( disabled_monit_config, monit_config ) if disabled_monit_config.exist?
 
-          raise "unable to enable upstart config" unless upstart_config.exist?
+          raise "unable to enable monit config" unless monit_config.tapp(:mc).exist?
+
+          reload_monit!
         end
 
         def service_enabled?
-          upstart_config.exist?
         end
 
         def remove_service
-          FileUtils.mv( upstart_config, disabled_upstart_config ) if upstart_config.exist?
+          FileUtils.mv( monit_config, disabled_monit_config ) if monit_config.exist?
+          reload_monit!
         end
 
         def signal_service(signal,should_raise=false)
           begin
-            initctl(signal,name).run
+            monit(signal, name).run
           rescue CommonMob::ShellError
             if should_raise
               raise $!
             else
-              log "/sbin/initctl #{signal} #{name} failed (but swallowing exception)"
+              log "monit #{signal} #{name} failed (but swallowing exception)"
               log "(out=#{$!.result.stdout})"
               log "(err=#{$!.result.stderr})"
             end
@@ -38,7 +40,6 @@ module CommonMob
         end
 
         def is_running?
-          !! initctl('status', name).to_s[/#{Regexp.escape(name)}.*running/]
         end
 
         def ensure_running!
@@ -49,16 +50,20 @@ module CommonMob
         end
 
         protected
-        def initctl(cmd,*args)
-          sh("/sbin/initctl #{cmd} #{args * ' '}")
+        def monit(cmd,*args)
+          sh("/usr/local/bin/monit #{cmd} #{args * ' '}")
         end
 
-        def upstart_config
-          Pathname("/etc/init/#{name}.conf")
+        def reload_monit!
+          monit('reload').run
         end
 
-        def disabled_upstart_config
-          Pathname("/etc/init/#{name}.conf.am-disabled")
+        def monit_config
+          Pathname("/etc/monit.d/#{name}.rc")
+        end
+
+        def disabled_monit_config
+          Pathname("/etc/monit.d/#{name}.rc.am-disabled")
         end
       end
     end

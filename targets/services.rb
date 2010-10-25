@@ -23,6 +23,9 @@ class Service < AngryMob::Target
     def redhat_service
       include CommonMob::Services::Styles::Redhat
     end
+    def monit_service
+      include CommonMob::Services::Styles::Monit
+    end
   end
 
   default_action
@@ -85,6 +88,9 @@ class Service < AngryMob::Target
   def self.at_least_lucid?
     issue = "/etc/issue".pathname
     issue.exist? && issue.read[/ubuntu.+10\.04/i]
+  end
+  def at_least_lucid?
+    self.class.at_least_lucid?
   end
   
 
