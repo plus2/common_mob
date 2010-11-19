@@ -75,8 +75,11 @@ class Git < AngryMob::Target
   end
 
   def ref
-    ref = args.ref || args.branch || 'master'
-    "#{remote}/#{ref}"
+    if base_ref = args.ref || args.branch
+      "#{remote}/#{base_ref}"
+    elsif ref = args.tag || args.sha || args.revision
+      ref
+    end
   end
 
   def revision
