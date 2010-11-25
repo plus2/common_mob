@@ -19,7 +19,9 @@ class Git < AngryMob::Target
       set_repo
 
       git("fetch").run
-      git("reset --hard #{ref}").run
+      git("reset --hard #{ref}".tapp(:git)).run
+      ui.log "repo at #{git("rev-parse HEAD").to_s}"
+      ui.log git("log HEAD^.. --shortstat --decorate").to_s
 
     rescue
       ui.exception! $!
