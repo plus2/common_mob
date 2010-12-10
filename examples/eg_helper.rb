@@ -3,7 +3,7 @@ require 'pathname'
 require 'exemplor'
 require 'angry_hash'
 
-root = Pathname(__FILE__).dirname.parent
+root = Pathname('../..').expand_path(__FILE__)
 
 $LOAD_PATH << root+'examples'
 $LOAD_PATH << root+'lib'

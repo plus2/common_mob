@@ -39,15 +39,27 @@ module CommonMob
     def execute
       error,out = nil,nil
 
+      # XXX interleave out and err
       rv = popen4(options) {|pid,stdin,stdout,stderr|
         out   = stdout.read
         error = stderr.read
       }
       
-      # TODO print as debug
+      if prefix = options[:prefix]
+        if Hash === prefix
+          pre_err = prefix[:err]
+          pre_out = prefix[:out]
+        else
+          pre_err = prefix
+          pre_out = prefix
+        end
 
-      rv.stderr = error
-      rv.stdout = out
+        rv.stderr = error.gsub(/^(.*)$/, "#{pre_err}\\1")
+        rv.stdout = out.gsub(/^(.*)$/  , "#{pre_out}\\1")
+      else
+        rv.stderr = error
+        rv.stdout = out
+      end
 
       rv
     end
@@ -76,7 +88,7 @@ module CommonMob
 
       def ensure_ok!
         unless ok?
-          ex = ShellError.new("unable to run options=#{options.inspect}\noutput=#{stdout}\nerror=#{stderr}")
+          ex = ShellError.new("unable to run\noptions=#{options.pretty_inspect}\noutput=#{stdout}\nerror=#{stderr}")
           ex.result = self
           raise(ex)
         end
