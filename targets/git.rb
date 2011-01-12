@@ -18,8 +18,9 @@ class Git < AngryMob::Target
     begin
       set_repo
 
-      git("fetch").run
-      git("reset --hard #{ref}".tapp(:git)).run
+      git("fetch -t").run
+      git("reset --hard #{ref}").run
+
       ui.log "repo at #{git("rev-parse HEAD").to_s}"
       ui.log git("log HEAD^.. --shortstat --decorate").to_s
 
@@ -33,7 +34,9 @@ class Git < AngryMob::Target
     log "cloning"
 
     begin
+      # XXX consider moving clone to init-then-update
       git("clone -o #{remote} #{args.repo} #{default_object}", :cwd => default_object.parent).run
+      git("fetch -t")
       git("reset --hard #{ref}").run
 
     rescue
@@ -64,8 +67,6 @@ class Git < AngryMob::Target
 
   def set_repo
     git("config remote.#{remote}.url #{args.repo}").run
-    # TODO write merge spec
-    # git("config branch.master.remote origin").run
   end
 
   def default_object
