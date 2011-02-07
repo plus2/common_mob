@@ -46,7 +46,9 @@ class Git < AngryMob::Target
     end
   end
 
+
   protected
+
 
   def changed
     unless FalseClass === args.enable_submodules
@@ -54,10 +56,12 @@ class Git < AngryMob::Target
     end
   end
 
+
   def is_git?
     exist? && git('rev-parse --is-inside-work-tree').to_s == "true"
   rescue CommonMob::ShellError
   end
+
 
   def git(*cmd)
     cmd.options[:cwd] ||= default_object
@@ -66,36 +70,55 @@ class Git < AngryMob::Target
     sh(*cmd)
   end
 
+
   def set_repo
     git("config remote.#{remote}.url #{args.repo}").run
   end
+
 
   def default_object
     args.default_object.pathname
   end
 
+
   def remote
     'origin'
   end
 
+
   def ref
-    if base_ref = args.ref || args.branch
-      "#{remote}/#{base_ref}"
-    elsif ref = args.tag || args.sha || args.revision
-      ref
+    @ref ||= full_ref #args.sha || args.ref || resolve_ref
+  end
+
+
+  def resolve_ref
+    git("ls-remote #{args.repo} #{full_ref}").to_s.split("\n").first.split(/\s+/,2).first
+  end
+
+
+  def full_ref
+    if branch = args.branch
+      "refs/heads/#{branch}"
+    elsif tag = args.tag
+      "refs/tags/#{tag}"
+    else
+      args.sha || args.ref
     end
   end
+
 
   def revision
     exist? && git("rev-parse HEAD").to_s
   rescue CommonMob::ShellError
   end
 
+
   def state
     {
       :revision => revision
     }
   end
+
 
   def validate!
     problem!("no git repo defined") unless args.repo?
