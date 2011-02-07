@@ -12,13 +12,14 @@ class Git < AngryMob::Target
     end
   end
 
+
   def update
     log "updating"
 
     begin
       set_repo
 
-      git("fetch -t").run
+      git("fetch -u -f #{args.repo} *:*" ).run
       git("reset --hard #{ref}").run
 
       ui.log "repo at #{git("rev-parse HEAD").to_s}"
@@ -30,14 +31,14 @@ class Git < AngryMob::Target
     end
   end
 
+
   def create
     log "cloning"
 
     begin
       # XXX consider moving clone to init-then-update
       git("clone -o #{remote} #{args.repo} #{default_object}", :cwd => default_object.parent).run
-      git("fetch -t")
-      git("reset --hard #{ref}").run
+      update
 
     rescue
       ui.exception! $!
