@@ -24,9 +24,15 @@ module CommonMob
         end
 
         def signal_service(signal,should_raise=false)
+          signal = signal.to_s
+
           begin
             initctl(signal,name).run
           rescue CommonMob::ShellError
+            if signal == 'reload' || signal == 'restart'
+              signal_service('start',should_raise)
+            end
+
             if should_raise
               raise $!
             else
