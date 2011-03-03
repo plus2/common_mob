@@ -22,6 +22,10 @@ class FileTarget < AngryMob::Target
     end
   end
 
+  def modify
+    set_file_ownership
+  end
+
   protected
 
   def default_object
@@ -39,7 +43,7 @@ class FileTarget < AngryMob::Target
   end
 
   def validate!
-    if !args.actions.include?('delete')
+    unless action?(:delete, :modify)
       if args.src?
         problem!(":src #{src} doesn't exist" ) unless src.exist?
       elsif !args.src? && !args.string?
