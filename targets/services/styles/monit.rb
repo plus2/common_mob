@@ -40,6 +40,7 @@ module CommonMob
         end
 
         def is_running?
+          !! monit('summary').to_s[/Process '#{name}'\s+running/]
         end
 
         def ensure_running!
