@@ -10,7 +10,7 @@ class Fetch < AngryMob::Target
 
     return if before_state[:exists] && (expected_sha && before_state[:sha] == expected_sha)
 
-    sh("curl #{args.src} -L -o #{default_object}".tapp, :cwd => args.cwd).run
+    sh("curl #{args.src} #{curl_opts} -L -o #{default_object}".tapp, :cwd => args.cwd).run
 
     if expected_sha && state[:sha] != expected_sha
       raise "downloaded file's sha didn't match expected sha #{expected_sha} != #{state[:sha]}"
@@ -18,6 +18,12 @@ class Fetch < AngryMob::Target
   end
 
   protected
+
+  def curl_opts
+    opts = ""
+    opts += " -k" if args.insecure_ssl
+    opts
+  end
 
   def expected_sha
     [ args.sha, args.sha256, args.sha512 ].find {|s| !s.blank?}
