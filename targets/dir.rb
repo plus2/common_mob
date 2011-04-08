@@ -1,4 +1,5 @@
 require 'common_mob'
+require 'fileutils'
 
 class DirTarget < AngryMob::Target
   nickname 'dir'
@@ -12,10 +13,18 @@ class DirTarget < AngryMob::Target
     rescue Errno::EEXIST
       # *ulp*
     end
+
+    clean if args.clean?
   end
 
   def delete
     FileUtils.rm_rf(default_object) if exist?
+  end
+
+  def clean
+    Pathname.glob(default_object + '*').each {|path|
+      FileUtils.rm_rf(path)
+    }
   end
 
   protected
