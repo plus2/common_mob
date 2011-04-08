@@ -25,7 +25,7 @@ class Yum < AngryMob::Target
 
   protected
   def yum(cmd)
-    sh("yum -d0 -e0 -y #{cmd}")
+    sh("yum -C -d0 -e0 -y #{cmd}")
   end
 
   def available_re 
@@ -41,6 +41,7 @@ class Yum < AngryMob::Target
       $
     ]x
   end
+
   def state
     begin
       match = yum("list #{default_object}").to_s.match(available_re)
