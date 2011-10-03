@@ -6,10 +6,10 @@ Gem::Specification.new do |s|
   s.name        = "angry_mob_common_targets"
   s.version     = AngryMobCommonTargets::VERSION
   s.authors     = ["Lachie Cox"]
-  s.email       = ["lachiec@gmail.com"]
-  s.homepage    = ""
-  s.summary     = %q{TODO: Write a gem summary}
-  s.description = %q{TODO: Write a gem description}
+  s.email       = ["lachie.cox@plus2.com.au"]
+  s.homepage    = "http://github.com/plus2/common_mob"
+  s.summary     = %q{Common targets to use with AngryMob}
+  s.description = %q{AngryMob Common Targets are a set of essential, reusable targets to get you started with AngryMob}
 
   s.rubyforge_project = "angry_mob_common_targets"
 
