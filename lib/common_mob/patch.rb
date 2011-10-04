@@ -15,7 +15,7 @@ module CommonMob
 
     def patch_string(to_patch, src, options={})
       comment = options[:comment] || '#'
-      key     = options[:key]
+      key     = options[:patch_key]
 
       content = "#{comment} angry-mob #{key} start\n#{src}" \
         "\n#{comment} angry-mob #{key} end"
@@ -34,7 +34,6 @@ module CommonMob
     end
 
     def patch_file(to_patch)
-      log "what the very hell?"
       if args.src?
         src = args.src.pathname.read
       elsif args.string?
@@ -42,8 +41,8 @@ module CommonMob
       end
 
       patch_string(to_patch.read, src, {
-        :comment => args.comment,
-        :key => args.key,
+        :comment   => args.comment,
+        :patch_key => args.patch_key,
       })
     end
 
