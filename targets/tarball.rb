@@ -18,7 +18,8 @@ class Tarball < AngryMob::Target
   protected
 
 
-  alias_method :tarball, :default_object
+  def tarball; default_object end
+
 
   def compression_opt
     ext = tarball.to_s[/\.([^\.]+)$/,1].downcase
