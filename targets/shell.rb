@@ -6,7 +6,7 @@ class Sh < AngryMob::Target
   default_action
   def execute
     if ! before_state[:created]
-      result = sh(default_object, opts).execute
+      result = sh(script, opts).execute
 
       begin
         result.ensure_ok!
@@ -26,7 +26,11 @@ class Sh < AngryMob::Target
     end
   end
 
+
   protected
+
+  alias_method :script, :default_object
+
 
   def opts
     opts = AngryHash[ args ]
@@ -35,6 +39,7 @@ class Sh < AngryMob::Target
 
     opts
   end
+
 
   def state
     if args.creates

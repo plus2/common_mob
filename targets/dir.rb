@@ -8,18 +8,20 @@ class DirTarget < AngryMob::Target
   default_action
   def create
     begin
-      mkpath unless exist?
+      dir.mkpath unless dir.exist?
       set_file_ownership
     rescue Errno::EEXIST
-      # *ulp*
+      # its ok if it already exists *ulp*
     end
 
     clean if args.clean?
   end
 
+
   def delete
-    FileUtils.rm_rf(default_object) if exist?
+    FileUtils.rm_rf(default_object) if dir.exist?
   end
+
 
   def clean
     Pathname.glob(default_object + '*').each {|path|
@@ -27,17 +29,22 @@ class DirTarget < AngryMob::Target
     }
   end
 
+
   protected
 
   def state
     {
-      :exists => exist?
+      :exists => dir.exist?
     }
   end
+
 
   def default_object
     Pathname(super)
   end
+
+  alias_method :dir, :default_object
+
 
   def validate!
   end

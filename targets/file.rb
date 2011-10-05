@@ -15,16 +15,19 @@ class FileTarget < AngryMob::Target
     set_file_ownership
   end
 
+
   def delete
-    if exist?
-      log "deleting #{default_object}"
+    if file.exist?
+      log "deleting #{ file }"
       unlink
     end
   end
 
+
   def modify
     set_file_ownership
   end
+
 
   protected
 
@@ -32,15 +35,21 @@ class FileTarget < AngryMob::Target
     Pathname(super)
   end
 
+
+  alias_method :file, :default_object
+
+
   def state
     {
-      :sha512 => sha512(default_object)
+      :sha512 => sha512(file)
     }
   end
+
 
   def src
     resource(args.src)
   end
+
 
   def validate!
     unless action?(:delete, :modify)
@@ -56,14 +65,15 @@ class FileTarget < AngryMob::Target
   def copy_resource(src)
     if sha512(src) != before_state[:sha512]
       log "input string different from file contents, overwriting"
-      src.cp_to(default_object)
+      src.cp_to(file)
     end
   end
+
 
   def create_string
     if sha512(args.string) != before_state[:sha512]
       log "input string different from file contents, overwriting"
-      default_object.open('w') {|f| f << args.string}
+      file.open('w') {|f| f << args.string}
     end
   end
 

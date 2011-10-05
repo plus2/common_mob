@@ -14,8 +14,10 @@ class Compile < Target
 
       build_cmd = build_command
 
+
+      # its a url, download
       if node_cfg.url?
-        archive   = work_dir + (default_object+ext)
+        archive   = work_dir + (default_object + ext)
         fetch_opts = {:src => node_cfg.url}
 
         if node_cfg.sha512?
@@ -23,11 +25,16 @@ class Compile < Target
         elsif node_cfg.sha256?
           fetch_opts[:sha256] = node_cfg.sha256
         end
+
+
+      # its a local file
       else
         archive    = node_cfg.src
         fetch_opts = nil
       end
 
+
+      # descend to a sub-act
       act.in_sub_act do
         dir     build_dir
 
@@ -35,8 +42,9 @@ class Compile < Target
           fetch archive, fetch_opts
         end
 
+
         tarball archive, :to => build_dir
-        sh(build_cmd, :cwd => build_dir)
+        sh build_cmd, :cwd => build_dir
       end
 
       ensure_built!
@@ -58,6 +66,7 @@ class Compile < Target
     @node_cfg ||= args.config || node.platform.compile.send(default_object)
   end
 
+
   def ext
     case node_cfg.url.downcase
     when /\.tar\.bz2$/
@@ -67,9 +76,11 @@ class Compile < Target
     end
   end
 
+
   def needs_rebuild?
     !( before_state[:created] && before_state[:config_ok] )
   end
+
 
   def verify_configuration
     return true unless args.verify_configuration?
@@ -81,18 +92,22 @@ class Compile < Target
     end
   end
 
+
   def create_path_exists?
     ! Dir[args.creates].empty?
   end
+
 
   def ensure_built!
     create_path_exists?   or raise("#{self} failed to create #{args.creates}")
     verify_configuration  or raise("#{self} failed to build with correct configuration")
   end
 
+
   def build_command
     args.build_command || "./configure && make install"
   end
+
 
   def validate!
     super
