@@ -5,7 +5,7 @@ class Tarball < AngryMob::Target
 
   default_action
   def extract
-    cmd = "tar #{compression_opt}xf #{default_object}"
+    cmd = "tar #{compression_opt}xf #{tarball}"
 
     if !dest.blank?
       sh("#{cmd} --strip 1 -C #{dest}").run
@@ -14,11 +14,14 @@ class Tarball < AngryMob::Target
     end
   end
 
+
   protected
 
+
+  alias_method :tarball, :default_object
+
   def compression_opt
-    ext = default_object.to_s[/\.([^\.]+)$/,1].downcase
-    log "ext=#{ext}"
+    ext = tarball.to_s[/\.([^\.]+)$/,1].downcase
     case ext
     when 'gz'
       'z'
@@ -27,9 +30,11 @@ class Tarball < AngryMob::Target
     end
   end
 
+
   def dest
     args.dest || args.extract_to || args.to
   end
+
 
   # no really good way to tell if we need to untar again...
   def state
