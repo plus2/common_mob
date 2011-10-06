@@ -7,27 +7,37 @@ class Apt < AngryMob::Target
   def install
     if args.version && !before_state[:version_matches]
       # TODO - install with version
-      sh("apt-get install -y #{default_object}", :environment => {'DEBIAN_FRONTEND' => "noninteractive"}).run
+      sh("apt-get install -y #{package}", :environment => {'DEBIAN_FRONTEND' => "noninteractive"}).run
+
     elsif !before_state[:installed]
-      sh("apt-get install -y #{default_object}", :environment => {'DEBIAN_FRONTEND' => "noninteractive"}).run
+      sh("apt-get install -y #{package}", :environment => {'DEBIAN_FRONTEND' => "noninteractive"}).run
+
     else
-      log "no need to install #{default_object}"
+      log "no need to install #{package}"
+
     end
   end
+
 
   def upgrade
   end
 
+
   def uninstall
     if before_state[:installed]
-      sh("apt-get remove -y #{default_object}").run
+      sh("apt-get remove -y #{package}").run
     end
   end
 
+
   protected
 
+
+  def package; default_object end
+
+
   def state
-    version = sh("apt-cache policy #{default_object}").to_s[/^\s+Installed: (.*)$/, 1]
+    version = policy[/^\s+Installed: (.*)$/, 1]
 
     {
       :installed       => (version != '(none)'),
@@ -36,12 +46,32 @@ class Apt < AngryMob::Target
     }
   end
 
+
+  def validate!
+    out,err = sh(policy_cmd).output
+
+    if err[/Unable to locate package/]
+      problem!("package #{package} doesn't exist")
+    end
+  end
+
+
+  def policy_cmd
+    "apt-cache policy #{package}"
+  end
+
+
+  def policy
+    sh(policy_cmd).to_s
+  end
+
+
   protected
   def before_call
     skip! unless before_state[:installable]
   end
-
 end
+
 
 class AptSource < AngryMob::Target
   include CommonMob::ShellHelper

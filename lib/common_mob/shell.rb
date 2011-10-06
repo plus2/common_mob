@@ -64,13 +64,16 @@ module CommonMob
       rv
     end
 
+
     def run
       execute.ensure_ok!
     end
 
+
     def ok?
       execute.ok?
     end
+
 
     def to_s
       result = execute
@@ -80,6 +83,13 @@ module CommonMob
         ''
       end
     end
+
+
+    def output
+      result = execute
+      [ result.stdout.chomp, result.stderr.chomp ]
+    end
+
 
     class ShellResult < Struct.new(:process_result, :options, :stderr, :stdout)
       def ok?
