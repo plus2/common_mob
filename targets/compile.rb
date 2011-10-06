@@ -88,6 +88,7 @@ class Compile < Target
     begin
       args.verify_configuration.call
     rescue
+      ui.bad "config verification failed: [#{ $!.class }] #{ $! }"
       false
     end
   end
