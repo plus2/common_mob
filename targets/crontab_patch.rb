@@ -24,7 +24,7 @@ class Crontab < AngryMob::Target
 
   protected
   def new_crontab
-    @new_crontab ||= patch_string(crontab, args.crontab, :key => default_object)
+    @new_crontab ||= patch_string(crontab, args.crontab, :patch_key => default_object)
   end
 
   def crontab
