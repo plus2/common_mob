@@ -85,6 +85,11 @@ module CommonMob
     end
 
 
+    def to_i
+      execute.process_result.exitstatus
+    end
+
+
     def output
       result = execute
       [ result.stdout.chomp, result.stderr.chomp ]
