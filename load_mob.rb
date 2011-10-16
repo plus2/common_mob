@@ -1,2 +1,6 @@
-load_lib(mob_root+'lib')
-load_targets(mob_root+'targets')
+name 'common_mob'
+
+build do |root|
+  add_lib          root+'lib'
+  add_targets_from root+'targets'
+end
